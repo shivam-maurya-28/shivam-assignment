@@ -1,0 +1,2 @@
+create database ->sm_crud
+import the sql file users.sql.
