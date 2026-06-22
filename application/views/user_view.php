@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <div class="container mt-3">
@@ -36,7 +37,7 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="ActionModal" tabindex="-1" aria-labelledby="ActionModalLabel" aria-hidden="true">
+    <div class="modal fade" id="ActionModal" tabindex="-1" aria-labelledby="ActionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -50,15 +51,15 @@
                                 <label class="text-muted fw-bold text-nowrap">Name:</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" name="name" placeholder="Enter Name">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name">
                             </div>
                         </div>
                         <div class="row mt-2">
                             <div class="col">
-                                <label class="text-muted fw-bold text-nowrap">Email:</label>
+                                <label class="text-muted fw-bold text-nowrap">Email <span class="text-danger">*</span>:</label>
                             </div>
                             <div class="col">
-                                <input type="email" class="form-control" name="email" placeholder="Enter Email">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
                             </div>
                         </div>
                         <div class="row mt-2">
@@ -66,35 +67,36 @@
                                 <label class="text-muted fw-bold text-nowrap">Mobile:</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" name="mobile" placeholder="Enter mobile">
+                                <input type="text" class="form-control" id="mobile" name="mobile" placeholder="Enter mobile">
                             </div>
                         </div>
                         <div class="row mt-2">
                             <div class="col">
-                                <label class="text-muted fw-bold text-nowrap">gender:</label>
+                                <label class="text-muted fw-bold text-nowrap">gender <span class="text-danger">*</span>:</label>
                             </div>
                             <div class="col">
-                                <input type="radio" name="gender" value="Male"> Male
-                                <input type="radio" name="gender" value="Female"> Female
+                                <input type="radio" name="gender" value="Male" > Male
+                                <input type="radio" name="gender" value="Female" required> Female
                             </div>
                         </div>
                         <div class="row mt-2">
                             <div class="col">
-                                <label class="text-muted fw-bold text-nowrap">state:</label>
+                                <label class="text-muted fw-bold text-nowrap">state <span class="text-danger">*</span>:</label>
                             </div>
                             <div class="col">
-                                <select class="form-select" name="state">
+                                <?php
+                                $states = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal"];
+                                ?>
+                                <select class="form-select" name="state" id="stateName" required>
                                     <option value="">Select State</option>
-                                    <option value="Gujarat">Gujarat</option>
-                                    <option value="Maharashtra">Maharashtra</option>
-                                    <option value="Delhi">Delhi</option>
-                                    <option value="Punjab">Punjab</option>
+                                    <?php foreach($states as $state){ ?>
+                                        <option value="<?= $state; ?>"><?= $state; ?></option><?php } ?>
                                 </select>
                             </div>
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="bs-modal-close">Close</button>
                     <button type="submit" class="btn btn-danger">Save</button>
                 </div>
                 </form>
@@ -102,9 +104,28 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        $('#stateName').select2({
+            dropdownParent: $('#ActionModal'),
+            placeholder:'Select a state',
+            width: '100%',
+        });
+        $('#bs-modal-close').off('click').on('click',function(){
+            $('#form1')[0].reset();
+            $('#stateName').val('').trigger('change');
+        });
+        $('#name').on('input',function(){
+            this.value= this.value.replace(/[^a-zA-Z\s]/g,'');
+        });
+        $('#mobile').on('input',function(){
+            this.value= this.value.replace(/[^0-9\+\s]/g,'').substring(0,15);
+        });
+        $('#email').on('input',function(){
+            this.value= this.value.replace(/[^a-zA-Z0-9@.\s]/g,'');
+        });
         function refreshData() {
             $.ajax({
                 url: "<?php echo site_url('user/getUsers'); ?>",
@@ -170,7 +191,7 @@
                         $('input[name="email"]').val(res.email);
                         $('input[name="mobile"]').val(res.mobile);
                         $('input[name="gender"][value="' + res.gender + '"]').prop('checked', true);
-                        $('select[name="state"]').val(res.state);
+                        $('select[name="state"]').val(res.state).trigger('change');
                         $('#ActionModal').modal('show');
                     }
                 });
