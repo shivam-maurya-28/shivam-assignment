@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class User extends CI_Controller
 {
@@ -7,6 +7,7 @@ class User extends CI_Controller
     {
         parent::__construct();
         $this->load->model('User_model');
+        $this->load->library('form_validation');
     }
     public function index()
     {
@@ -16,19 +17,52 @@ class User extends CI_Controller
     public function saveUser()
     {
         $id = $this->input->post('id');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('gender', 'Gender', 'required|in_list[Male,Female]');
+        $this->form_validation->set_rules('state', 'State', 'required');
+        if ($this->form_validation->run() == FALSE) {
+            echo json_encode([
+                'status' => 'failed',
+                'message' => validation_errors()
+            ]);
+            return;
+        }
+        $email = strtolower($this->input->post('email', true));
+        $this->db->where('email', $email);
+        $this->db->where('deleted_at IS NULL', NULL, FALSE);
+        if (!empty($id)) {
+            $this->db->where('id !=', $id);
+        }
+        $existingEmail = $this->db->get('users')->num_rows();
+        if ($existingEmail > 0) {
+            echo json_encode([
+                'status' => 'failed',
+                'message' => 'Email already exists'
+            ]);
+            return;
+        }
+        
+
         $data = [
-            'name' => $this->input->post('name'),
-            'email' => $this->input->post('email'),
-            'mobile' => $this->input->post('mobile'),
-            'gender' => $this->input->post('gender'),
-            'state' => $this->input->post('state')
+            'name' => $this->input->post('name', TRUE),
+            'email' => $email,
+            'mobile' => $this->input->post('mobile', TRUE),
+            'gender' => $this->input->post('gender', TRUE),
+            'state' => $this->input->post('state', TRUE)
         ];
         if (!empty($id)) {
             $result = $this->User_model->updateUser($id, $data);
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'User Updated Successfully'
-            ]);
+            if ($result) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'User Updated Successfully'
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'failed',
+                    'message' => 'Update Failed'
+                ]);
+            }
             return;
         }
         $insert = $this->User_model->insertUser($data);
@@ -61,7 +95,9 @@ class User extends CI_Controller
     public function deleteUser()
     {
         $id = $this->input->post('id');
-        $delete = $this->User_model->deleteRecorde($id);
+        $delete = $this->db->where('id', $id)->update('users', [
+            'deleted_at' => date('Y-m-d H:i:s')
+        ]);
         if ($delete) {
             echo json_encode([
                 'status' => 'success',

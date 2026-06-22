@@ -12,7 +12,7 @@ class User_model extends CI_Model
     }
     public function get_users()
     {
-        return $this->db->order_by('id', 'DESC')->get('users')->result_array();
+        return $this->db->where('deleted_at',NULL)->order_by('id', 'DESC')->get('users')->result_array();
     }
     public function getSingleUser($id)
     {

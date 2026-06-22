@@ -115,13 +115,14 @@
         });
         $('#bs-modal-close').off('click').on('click',function(){
             $('#form1')[0].reset();
+            $('#id').val('');
             $('#stateName').val('').trigger('change');
         });
         $('#name').on('input',function(){
             this.value= this.value.replace(/[^a-zA-Z\s]/g,'');
         });
         $('#mobile').on('input',function(){
-            this.value= this.value.replace(/[^0-9\+\s]/g,'').substring(0,15);
+            this.value= this.value.replace(/[^0-9\+\s]/g,'').substring(0,14);
         });
         $('#email').on('input',function(){
             this.value= this.value.replace(/[^a-zA-Z0-9@.\s]/g,'');
@@ -132,7 +133,15 @@
                 type: "GET",
                 dataType: "json",
                 success: function (response) {
+                    var data = response.data;
                     var html = '';
+                    if(data.length == 0){
+                        html += `
+                        <tr>
+                            <td colspan ="7" class="text-center">No Rows found</tr>
+                        </tr>
+                        `;
+                    }
                     $.each(response.data, function (index, user) {
                         html += `
                     <tr>
@@ -161,6 +170,8 @@
                     type: "POST",
                     data: formData,
                     dataType: "json",
+                    processData:false,
+                    contentType:false,
                     success: function (response) {
                         if (response.status == 'success') {
                             toastr.success(response.message);
